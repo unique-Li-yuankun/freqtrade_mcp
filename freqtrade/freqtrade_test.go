@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	Dir = "E:\\桌面\\github项目\\ft_userdata\\freqtrade"
+	Dir = "W:\\freqtrade"
 }
 
 func TestFreqtradeEnv(t *testing.T) {
