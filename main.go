@@ -28,6 +28,8 @@ func main() {
 	server := mcp.NewServer(&mcp.Implementation{Name: "freqtrade_mcp", Version: "v1.0.0"}, nil)
 	mcp.AddTool(server, &mcp.Tool{Name: "backtesting", Description: "backtesting strategy"}, tool.BackTest)
 	mcp.AddTool(server, &mcp.Tool{Name: "download-data", Description: "download data from exchange"}, tool.DownloadData)
+	mcp.AddTool(server, &mcp.Tool{Name: "list-datafile", Description: "get all data file which contain K line information, such as BTC/USDT,ETH/USDT"}, tool.ExchangeDataFiles)
+	mcp.AddTool(server, &mcp.Tool{Name: "read-datafile", Description: "read a data file"}, tool.ReadExchangeDataFile)
 	handler := mcp.NewStreamableHTTPHandler(func(request *http.Request) *mcp.Server {
 		return server
 	}, &mcp.StreamableHTTPOptions{})
