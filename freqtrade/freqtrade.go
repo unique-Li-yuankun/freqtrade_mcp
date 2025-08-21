@@ -18,6 +18,8 @@ type BackTestParams struct {
 	Pairs           []string `json:"pairs" jsonschema:"Limit command to these pairs"`
 	StartingBalance int      `json:"starting-balance" jsonschema:"Starting balance, used for backtesting / hyperopt and dry-runs"`
 	StrategyList    []string `json:"strategy-list" jsonschema:"Strategy that need to be backtested"`
+	Config          string   `json:"config" jsonschema:"Specify configuration file, path must be absolute where the config.json located"`
+	StrategyPath    string   `json:"strategy-path" jsonschema:"Path to the strategy, path must be absolute where the .py located"`
 }
 
 func (p *BackTestParams) Param() []string {
@@ -45,7 +47,43 @@ func (p *BackTestParams) Param() []string {
 		strategies := strings.Join(p.StrategyList, " ")
 		params = append(params, fmt.Sprintf("--strategy-list %s", strategies))
 	}
+	if p.Config != "" {
+		params = append(params, fmt.Sprintf("--config %s", p.Config))
+	}
+	if p.StrategyPath != "" {
+		params = append(params, fmt.Sprintf("--strategy-path %s", p.StrategyPath))
+	}
 	return params
+}
+
+type DownloadDataParams struct {
+	Exchange  string   `json:"exchange" jsonschema:"Exchange to download data from"`
+	Timeframe string   `json:"timeframe" jsonschema:"Timeframe to download data from"`
+	Pairs     []string `json:"pairs" jsonschema:"Pairs to download data from, (example:'BTC/USDT')"`
+	TimeRange string   `json:"timerange" jsonschema:"Time range to download data from, (example:'20240101-20240102')"`
+}
+
+func (p *DownloadDataParams) Param() []string {
+	var params []string
+	if p.Exchange != "" {
+		params = append(params, fmt.Sprintf("--exchange %s", p.Exchange))
+	}
+	if p.Timeframe != "" {
+		params = append(params, fmt.Sprintf("--timeframe %s", p.Timeframe))
+	}
+	if len(p.Pairs) != 0 {
+		pairs := strings.Join(p.Pairs, " ")
+		params = append(params, fmt.Sprintf("--pairs %s", pairs))
+	}
+	if p.TimeRange != "" {
+		params = append(params, fmt.Sprintf("--timerange %s", p.TimeRange))
+	}
+	return params
+}
+
+func DownloadData(p DownloadDataParams) (string, error) {
+	output, err := ExecuteCommandInNewConsole("freqtrade download-data", p.Param()...)
+	return string(output), err
 }
 
 func BackTest(p BackTestParams) (string, error) {
