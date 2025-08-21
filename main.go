@@ -2,9 +2,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"freqtrade_mcp/freqtrade"
 	"freqtrade_mcp/mcp/tool"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -16,7 +20,7 @@ func main() {
 	flag.StringVar(&address, "address", "localhost:8000", "address to listen on")
 	flag.Parse()
 	if freqtrade.Dir == "" {
-		panic("Please set freqtradeDir variable")
+		panic("Please set dir arg.")
 	}
 
 	server := mcp.NewServer(&mcp.Implementation{Name: "freqtrade_mcp", Version: "v1.0.0"}, nil)
@@ -25,8 +29,15 @@ func main() {
 	handler := mcp.NewSSEHandler(func(request *http.Request) *mcp.Server {
 		return server
 	})
-	err := http.ListenAndServe(address, handler)
-	if err != nil {
-		panic(err)
-	}
+	go func() {
+		err := http.ListenAndServe(address, handler)
+		if err != nil {
+			panic(err)
+		}
+	}()
+	fmt.Println("freqtrade_mcp is running on", address)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+	fmt.Println("freqtrade_mcp is shutting down")
 }
