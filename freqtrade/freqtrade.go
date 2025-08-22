@@ -53,6 +53,7 @@ func (p *BackTestParams) Param() []string {
 	if p.StrategyPath != "" {
 		params = append(params, fmt.Sprintf("--strategy-path %s", p.StrategyPath))
 	}
+	params = append(params, fmt.Sprintf("--data-format-ohlcv %s", "json"))
 	return params
 }
 
