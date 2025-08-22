@@ -42,5 +42,9 @@ cd freqtrade
 
 - **Claude Code**
 ```bash
+添加到当前项目：
 claude mcp add --transport http freqtrade_mcp http://127.0.0.1:8000
+
+添加到全局：
+claude mcp add --scope user --transport http freqtrade_mcp http://127.0.0.1:8000
 ```
