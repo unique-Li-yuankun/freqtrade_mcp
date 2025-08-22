@@ -39,3 +39,8 @@ cd freqtrade
     }
 }
 ```
+
+- **Claude Code**
+```bash
+claude mcp add --transport http freqtrade_mcp http://127.0.0.1:8000
+```
