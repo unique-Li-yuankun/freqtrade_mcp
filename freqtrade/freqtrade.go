@@ -19,7 +19,7 @@ type BackTestParams struct {
 	StartingBalance int      `json:"starting-balance" jsonschema:"Starting balance, used for backtesting / hyperopt and dry-runs"`
 	StrategyList    []string `json:"strategy-list" jsonschema:"Strategy that need to be backtested"`
 	Config          string   `json:"config" jsonschema:"Specify configuration file, path must be absolute where the config.json located"`
-	StrategyPath    string   `json:"strategy-path" jsonschema:"Path to the strategy, path must be absolute where the .py located"`
+	StrategyPath    string   `json:"strategy-path" jsonschema:"Path to the strategy, directory must be absolute where the .py located"`
 }
 
 func (p *BackTestParams) Param() []string {
