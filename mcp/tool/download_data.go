@@ -13,6 +13,7 @@ func DownloadData(ctx context.Context, session *mcp.ServerSession, req *mcp.Call
 	result := &mcp.CallToolResultFor[any]{
 		Content: []mcp.Content{
 			&mcp.TextContent{Text: output},
+			&mcp.TextContent{Text: "if data length equal zero, maybe data already exists."},
 		},
 	}
 	if err != nil {

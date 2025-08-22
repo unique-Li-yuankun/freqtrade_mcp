@@ -78,6 +78,7 @@ func (p *DownloadDataParams) Param() []string {
 	if p.TimeRange != "" {
 		params = append(params, fmt.Sprintf("--timerange %s", p.TimeRange))
 	}
+	params = append(params, fmt.Sprintf("--data-format-ohlcv %s", "json"))
 	return params
 }
 
