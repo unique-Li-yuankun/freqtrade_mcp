@@ -16,7 +16,7 @@ git clone https://github.com/freqtrade/freqtrade.git
 Set-ExecutionPolicy -ExecutionPolicy Bypass
 cd freqtrade
 .\setup.ps1
-.\freqtrade_mcp -dir W:\freqtrade -addr localhost:8000
+.\freqtrade_mcp_linux_amd64 -dir W:\freqtrade -addr localhost:8000
 ```
 
 - **Linux/MacOS**
@@ -24,7 +24,7 @@ cd freqtrade
 git clone https://github.com/freqtrade/freqtrade.git
 cd freqtrade
 ./setup.sh -i
-./freqtrade_mcp -dir path/to/freqtrade -addr localhost:8000
+./freqtrade_mcp_linux_amd64 -dir path/to/freqtrade -addr localhost:8000
 ```
 
 配置MCP服务器
