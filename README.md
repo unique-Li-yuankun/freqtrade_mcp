@@ -8,7 +8,7 @@ FreqTrade MCP 是一个集成了模型上下文协议（MCP）的加密货币回
 - **回测功能**: 使用历史数据测试策略
 
 ### 使用
-PS ： 预先下载可执行文件（https://github.com/unique-Li-yuankun/freqtrade_mcp/releases)
+PS ： 预先下载可执行文件或自行编译（https://github.com/unique-Li-yuankun/freqtrade_mcp/releases)
 
 - **Windows**:
 ```bash 
