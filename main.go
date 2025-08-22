@@ -19,7 +19,7 @@ var address string
 
 func main() {
 	flag.StringVar(&freqtrade.Dir, "dir", "", "freqtrade directory")
-	flag.StringVar(&address, "address", "localhost:8000", "address to listen on")
+	flag.StringVar(&address, "addr", "localhost:8000", "address to listen on")
 	flag.Parse()
 	if freqtrade.Dir == "" {
 		panic("Please set dir arg.")

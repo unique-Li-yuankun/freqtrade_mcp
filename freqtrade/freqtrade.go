@@ -22,7 +22,7 @@ type BackTestParams struct {
 	StrategyPath    string   `json:"strategy-path" jsonschema:"Path to the strategy, directory must be absolute where the .py located"`
 }
 
-func (p *BackTestParams) Param() []string {
+func (p *BackTestParams) Param(export string) []string {
 	var params []string
 	if p.TimeFrame == "1m" || p.TimeFrame == "5m" || p.TimeFrame == "30m" || p.TimeFrame == "1h" || p.TimeFrame == "1d" {
 		params = append(params, fmt.Sprintf("--timeframe %s", p.TimeFrame))
@@ -54,6 +54,7 @@ func (p *BackTestParams) Param() []string {
 		params = append(params, fmt.Sprintf("--strategy-path %s", p.StrategyPath))
 	}
 	params = append(params, fmt.Sprintf("--data-format-ohlcv %s", "json"))
+	params = append(params, fmt.Sprintf("--export %s", export))
 	return params
 }
 
@@ -89,8 +90,14 @@ func DownloadData(p DownloadDataParams) (string, error) {
 }
 
 func BackTest(p BackTestParams) (string, error) {
-	output, err := ExecuteCommandInNewConsole("freqtrade backtesting", p.Param()...)
-	return string(output), err
+	var result string
+	trades, err := ExecuteCommandInNewConsole("freqtrade backtesting", p.Param("trades")...)
+	result += string(trades)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
 
 func ExecuteCommandInNewConsole(command string, args ...string) ([]byte, error) {
