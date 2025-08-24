@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 )
@@ -22,39 +23,10 @@ type BackTestParams struct {
 	StrategyPath    string   `json:"strategy-path" jsonschema:"Path to the strategy, directory must be absolute where the .py located"`
 }
 
-func (p *BackTestParams) Param(export string) []string {
-	var params []string
-	if p.TimeFrame == "1m" || p.TimeFrame == "5m" || p.TimeFrame == "30m" || p.TimeFrame == "1h" || p.TimeFrame == "1d" {
-		params = append(params, fmt.Sprintf("--timeframe %s", p.TimeFrame))
-	}
-	if p.TimeRange != "" {
-		params = append(params, fmt.Sprintf("--timerange %s", p.TimeRange))
-	}
-	if p.MaxOpenTrades != 0 {
-		params = append(params, fmt.Sprintf("--max-open-trades %d", p.MaxOpenTrades))
-	}
-	if p.StakeAmount != 0 {
-		params = append(params, fmt.Sprintf("--stake-amount %d", p.StakeAmount))
-	}
-	if len(p.Pairs) != 0 {
-		pairs := strings.Join(p.Pairs, " ")
-		params = append(params, fmt.Sprintf("--pairs %s", pairs))
-	}
-	if p.StartingBalance != 0 {
-		params = append(params, fmt.Sprintf("--starting-balance %d", p.StartingBalance))
-	}
-	if len(p.StrategyList) != 0 {
-		strategies := strings.Join(p.StrategyList, " ")
-		params = append(params, fmt.Sprintf("--strategy-list %s", strategies))
-	}
-	if p.Config != "" {
-		params = append(params, fmt.Sprintf("--config %s", p.Config))
-	}
-	if p.StrategyPath != "" {
-		params = append(params, fmt.Sprintf("--strategy-path %s", p.StrategyPath))
-	}
+func (p *BackTestParams) Param() []string {
+	params := structJsonParams(p)
 	params = append(params, fmt.Sprintf("--data-format-ohlcv %s", "json"))
-	params = append(params, fmt.Sprintf("--export %s", export))
+	params = append(params, fmt.Sprintf("--export %s", "trades"))
 	return params
 }
 
@@ -66,21 +38,36 @@ type DownloadDataParams struct {
 }
 
 func (p *DownloadDataParams) Param() []string {
-	var params []string
-	if p.Exchange != "" {
-		params = append(params, fmt.Sprintf("--exchange %s", p.Exchange))
-	}
-	if p.Timeframe != "" {
-		params = append(params, fmt.Sprintf("--timeframe %s", p.Timeframe))
-	}
-	if len(p.Pairs) != 0 {
-		pairs := strings.Join(p.Pairs, " ")
-		params = append(params, fmt.Sprintf("--pairs %s", pairs))
-	}
-	if p.TimeRange != "" {
-		params = append(params, fmt.Sprintf("--timerange %s", p.TimeRange))
-	}
+	params := structJsonParams(p)
 	params = append(params, fmt.Sprintf("--data-format-ohlcv %s", "json"))
+	return params
+}
+
+func structJsonParams(s any) []string {
+	var params []string
+	ts := reflect.TypeOf(s).Elem()
+	vs := reflect.ValueOf(s).Elem()
+	for i := 0; i < ts.NumField(); i++ {
+		field := ts.Field(i)
+		fieldV := vs.Field(i)
+		key, ok := field.Tag.Lookup("json")
+		if !ok {
+			continue
+		}
+
+		var param string
+		switch field.Type.Kind() {
+		case reflect.Slice:
+			var value []string
+			for j := 0; j < fieldV.Len(); j++ {
+				value = append(value, fmt.Sprintf("%v", fieldV.Index(j).Interface()))
+			}
+			param = fmt.Sprintf("--%s %v", key, strings.Join(value, " "))
+		default:
+			param = fmt.Sprintf("--%s %v", key, fieldV.Interface())
+		}
+		params = append(params, param)
+	}
 	return params
 }
 
@@ -91,12 +78,11 @@ func DownloadData(p DownloadDataParams) (string, error) {
 
 func BackTest(p BackTestParams) (string, error) {
 	var result string
-	trades, err := ExecuteCommandInNewConsole("freqtrade backtesting", p.Param("trades")...)
+	trades, err := ExecuteCommandInNewConsole("freqtrade backtesting", p.Param()...)
 	result += string(trades)
 	if err != nil {
 		return result, err
 	}
-
 	return result, nil
 }
 
