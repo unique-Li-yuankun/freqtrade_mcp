@@ -2,6 +2,7 @@ package freqtrade
 
 import (
 	"flag"
+	"freqtrade_mcp/utils"
 	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
@@ -33,6 +34,6 @@ func TestStructJsonParam(t *testing.T) {
 		Price:       10,
 		Labels:      []string{"stable", "pow"},
 	}
-	p := structJsonParams(&testStruct)
+	p := utils.StructJsonParams(&testStruct)
 	require.Equal(t, p, []string{"--no 1", "--description Coin", "--price 10", "--labels stable pow"})
 }

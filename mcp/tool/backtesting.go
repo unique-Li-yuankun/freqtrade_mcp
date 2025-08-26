@@ -7,8 +7,8 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func DownloadData(ctx context.Context, session *mcp.ServerSession, req *mcp.CallToolParamsFor[freqtrade.DownloadDataParams]) (*mcp.CallToolResultFor[any], error) {
-	output, err := freqtrade.DownloadData(req.Arguments)
+func Backtesting(ctx context.Context, session *mcp.ServerSession, req *mcp.CallToolParamsFor[freqtrade.BacktesingParams]) (*mcp.CallToolResultFor[any], error) {
+	output, err := freqtrade.Backtesting(req.Arguments)
 	result := &mcp.CallToolResultFor[any]{
 		Content: []mcp.Content{
 			&mcp.TextContent{Text: output},
