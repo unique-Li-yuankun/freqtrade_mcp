@@ -33,8 +33,6 @@ func main() {
 
 	mcp.AddTool(server, &mcp.Tool{Name: "upsert-config", Description: "upsert config. Must use it to add or update config.json"}, tool.UpsertConfig)
 	mcp.AddTool(server, &mcp.Tool{Name: "upsert-strategy", Description: "upsert strategy. Must use it to add or update a strategy"}, tool.UpsertStrategy)
-	mcp.AddTool(server, &mcp.Tool{Name: "list-datafile", Description: "get all data file which contain K line information, such as BTC/USDT,ETH/USDT"}, tool.ExchangeDataFiles)
-	mcp.AddTool(server, &mcp.Tool{Name: "read-datafile", Description: "read a data file"}, tool.ReadExchangeDataFile)
 
 	handler := mcp.NewStreamableHTTPHandler(func(request *http.Request) *mcp.Server {
 		return server
