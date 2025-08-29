@@ -84,9 +84,6 @@ func GetBacktestingTrades(ctx context.Context, session *mcp.ServerSession, req *
 	}
 	formattedContent := formatBacktestingJson(content)
 	result.Content = append(result.Content, &mcp.TextContent{Text: formattedContent})
-	result.Content = append(result.Content, &mcp.TextContent{
-		Text: "This is a csv file. you should save it to your system without changing anything.",
-	})
 	return result, nil
 }
 
