@@ -31,7 +31,7 @@ func main() {
 	mcp.AddTool(server, &mcp.Tool{Name: "backtesting-analysis", Description: "backtesting result analysis"}, tool.BacktestingAnalysis)
 	mcp.AddTool(server, &mcp.Tool{Name: "download-data", Description: "download data from exchange"}, tool.DownloadData)
 
-	mcp.AddTool(server, &mcp.Tool{Name: "get-backtesting-trades", Description: "get backtesting trades"}, tool.GetBacktestingResult)
+	mcp.AddTool(server, &mcp.Tool{Name: "get-backtesting-trades", Description: "get backtesting trades"}, tool.GetBacktestingTrades)
 	mcp.AddTool(server, &mcp.Tool{Name: "upsert-config", Description: "upsert config. Must use it to add or update config.json"}, tool.UpsertConfig)
 	mcp.AddTool(server, &mcp.Tool{Name: "upsert-strategy", Description: "upsert strategy. Must use it to add or update a strategy"}, tool.UpsertStrategy)
 

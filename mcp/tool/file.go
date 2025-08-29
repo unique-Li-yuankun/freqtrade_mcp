@@ -75,7 +75,7 @@ func (p *GetBacktestingResultParams) Param() []string {
 	return utils.StructJsonParams(p)
 }
 
-func GetBacktestingResult(ctx context.Context, session *mcp.ServerSession, req *mcp.CallToolParamsFor[GetBacktestingResultParams]) (*mcp.CallToolResultFor[any], error) {
+func GetBacktestingTrades(ctx context.Context, session *mcp.ServerSession, req *mcp.CallToolParamsFor[GetBacktestingResultParams]) (*mcp.CallToolResultFor[any], error) {
 	result := &mcp.CallToolResultFor[any]{}
 	content, err := latestBacktestingJson(req.Arguments.UserDir)
 	if err != nil {
