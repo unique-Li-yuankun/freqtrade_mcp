@@ -1,12 +1,15 @@
 package freqtrade
 
 import (
+	"flag"
+	"freqtrade_mcp/utils"
+	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
 )
 
 func init() {
-	Dir = "W:\\freqtrade"
+	flag.StringVar(&Dir, "dir", "", "freqtrade directory")
 }
 
 func TestFreqtradeEnv(t *testing.T) {
@@ -19,16 +22,18 @@ func TestFreqtradeEnv(t *testing.T) {
 	}
 }
 
-func TestBackTesting(t *testing.T) {
-	p := BackTestParams{
-		TimeFrame:       "5m",
-		TimeRange:       "20250101-20250801",
-		MaxOpenTrades:   3,
-		StakeAmount:     500,
-		Pairs:           []string{"BTC/USDT"},
-		StartingBalance: 10000,
-		StrategyList:    []string{"SampleStrategy"},
+func TestStructJsonParam(t *testing.T) {
+	testStruct := struct {
+		No          int      `json:"no"`
+		Description string   `json:"description"`
+		Price       float64  `json:"price"`
+		Labels      []string `json:"labels"`
+	}{
+		No:          1,
+		Description: "Coin",
+		Price:       10,
+		Labels:      []string{"stable", "pow"},
 	}
-	output, err := BackTest(p)
-	t.Log(output, err)
+	p := utils.StructJsonParams(&testStruct)
+	require.Equal(t, p, []string{"--no 1", "--description Coin", "--price 10", "--labels stable pow"})
 }

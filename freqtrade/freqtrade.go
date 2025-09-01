@@ -2,59 +2,31 @@ package freqtrade
 
 import (
 	"fmt"
-	"os/exec"
+	"freqtrade_mcp/utils"
 	"path/filepath"
 	"runtime"
 	"strings"
 )
 
-var Dir string
+var (
+	Dir string
+)
 
-type BackTestParams struct {
+type BacktesingParams struct {
 	TimeFrame       string   `json:"timeframe" jsonschema:"Specify timeframe 1m,5m,30m,1h,1d"`
 	TimeRange       string   `json:"timerange" jsonschema:"Specify what timerange of data to use"`
 	MaxOpenTrades   int      `json:"max-open-trades" jsonschema:"Override the value of the max_open_trades configuration setting"`
 	StakeAmount     int      `json:"stake-amount" jsonschema:"Override the value of the stake_amount configuration setting"`
 	Pairs           []string `json:"pairs" jsonschema:"Limit command to these pairs"`
 	StartingBalance int      `json:"starting-balance" jsonschema:"Starting balance, used for backtesting / hyperopt and dry-runs"`
-	StrategyList    []string `json:"strategy-list" jsonschema:"Strategy that need to be backtested"`
-	Config          string   `json:"config" jsonschema:"Specify configuration file, path must be absolute where the config.json located"`
-	StrategyPath    string   `json:"strategy-path" jsonschema:"Path to the strategy, directory must be absolute where the .py located"`
+	StrategyList    []string `json:"strategy-list" jsonschema:"Strategy that need to be backtested. Make sure you have already upload them"`
+	UserDir         string   `json:"userdir" jsonschema:"Path to userdata directory. Relative path"`
 }
 
-func (p *BackTestParams) Param(export string) []string {
-	var params []string
-	if p.TimeFrame == "1m" || p.TimeFrame == "5m" || p.TimeFrame == "30m" || p.TimeFrame == "1h" || p.TimeFrame == "1d" {
-		params = append(params, fmt.Sprintf("--timeframe %s", p.TimeFrame))
-	}
-	if p.TimeRange != "" {
-		params = append(params, fmt.Sprintf("--timerange %s", p.TimeRange))
-	}
-	if p.MaxOpenTrades != 0 {
-		params = append(params, fmt.Sprintf("--max-open-trades %d", p.MaxOpenTrades))
-	}
-	if p.StakeAmount != 0 {
-		params = append(params, fmt.Sprintf("--stake-amount %d", p.StakeAmount))
-	}
-	if len(p.Pairs) != 0 {
-		pairs := strings.Join(p.Pairs, " ")
-		params = append(params, fmt.Sprintf("--pairs %s", pairs))
-	}
-	if p.StartingBalance != 0 {
-		params = append(params, fmt.Sprintf("--starting-balance %d", p.StartingBalance))
-	}
-	if len(p.StrategyList) != 0 {
-		strategies := strings.Join(p.StrategyList, " ")
-		params = append(params, fmt.Sprintf("--strategy-list %s", strategies))
-	}
-	if p.Config != "" {
-		params = append(params, fmt.Sprintf("--config %s", p.Config))
-	}
-	if p.StrategyPath != "" {
-		params = append(params, fmt.Sprintf("--strategy-path %s", p.StrategyPath))
-	}
+func (p *BacktesingParams) Param() []string {
+	params := utils.StructJsonParams(p)
 	params = append(params, fmt.Sprintf("--data-format-ohlcv %s", "json"))
-	params = append(params, fmt.Sprintf("--export %s", export))
+	params = append(params, fmt.Sprintf("--export %s", "signals"))
 	return params
 }
 
@@ -63,25 +35,32 @@ type DownloadDataParams struct {
 	Timeframe string   `json:"timeframe" jsonschema:"Timeframe to download data from"`
 	Pairs     []string `json:"pairs" jsonschema:"Pairs to download data from, (example:'BTC/USDT')"`
 	TimeRange string   `json:"timerange" jsonschema:"Time range to download data from, (example:'20240101-20240102')"`
+	UserDir   string   `json:"userdir" jsonschema:"Path to userdata directory. Relative path"`
 }
 
 func (p *DownloadDataParams) Param() []string {
-	var params []string
-	if p.Exchange != "" {
-		params = append(params, fmt.Sprintf("--exchange %s", p.Exchange))
-	}
-	if p.Timeframe != "" {
-		params = append(params, fmt.Sprintf("--timeframe %s", p.Timeframe))
-	}
-	if len(p.Pairs) != 0 {
-		pairs := strings.Join(p.Pairs, " ")
-		params = append(params, fmt.Sprintf("--pairs %s", pairs))
-	}
-	if p.TimeRange != "" {
-		params = append(params, fmt.Sprintf("--timerange %s", p.TimeRange))
-	}
+	params := utils.StructJsonParams(p)
 	params = append(params, fmt.Sprintf("--data-format-ohlcv %s", "json"))
+	params = append(params, "--erase")
 	return params
+}
+
+type BacktestingAnalysisParams struct {
+	UserDir string `json:"userdir" jsonschema:"Path to userdata directory. Relative path"`
+}
+
+func (p *BacktestingAnalysisParams) Param() []string {
+	params := utils.StructJsonParams(p)
+	params = append(params, fmt.Sprintf("--indicator-list %s", "close_date trade_duration amount profit_ratio profit_abs orders"))
+	return params
+}
+
+type CreateUserDirParams struct {
+	UserDir string `json:"userdir" jsonschema:"Path to userdata directory. Relative path (example: tt)"`
+}
+
+func (p *CreateUserDirParams) Param() []string {
+	return utils.StructJsonParams(p)
 }
 
 func DownloadData(p DownloadDataParams) (string, error) {
@@ -89,36 +68,34 @@ func DownloadData(p DownloadDataParams) (string, error) {
 	return string(output), err
 }
 
-func BackTest(p BackTestParams) (string, error) {
-	var result string
-	trades, err := ExecuteCommandInNewConsole("freqtrade backtesting", p.Param("trades")...)
-	result += string(trades)
-	if err != nil {
-		return result, err
-	}
+func Backtesting(p BacktesingParams) (string, error) {
+	output, err := ExecuteCommandInNewConsole("freqtrade backtesting", p.Param()...)
+	return string(output), err
+}
 
-	return result, nil
+func BacktestingAnalysis(p BacktestingAnalysisParams) (string, error) {
+	output, err := ExecuteCommandInNewConsole("freqtrade backtesting-analysis", p.Param()...)
+	return string(output), err
+}
+
+func CreateUserDir(p CreateUserDirParams) (string, error) {
+	output, err := ExecuteCommandInNewConsole("freqtrade create-userdir", p.Param()...)
+	return string(output), err
 }
 
 func ExecuteCommandInNewConsole(command string, args ...string) ([]byte, error) {
-	var cmd *exec.Cmd
 	var fullCommand string
-
 	userCommand := command
 	if len(args) > 0 {
 		userCommand += " " + strings.Join(args, " ")
 	}
-
 	cdCommand := fmt.Sprintf("cd %s", Dir)
 	if runtime.GOOS == "windows" {
 		activateScript := filepath.Join(Dir, ".venv", "Scripts", "Activate.ps1")
 		fullCommand = fmt.Sprintf(`& "%s"; %s; %s`, activateScript, cdCommand, userCommand)
-		cmd = exec.Command("powershell", "-Command", fullCommand)
 	} else {
 		activateScript := filepath.Join(Dir, ".venv", "bin", "activate")
 		fullCommand = fmt.Sprintf("source %s && %s && %s", activateScript, cdCommand, userCommand)
-		cmd = exec.Command("/bin/bash", "-c", fullCommand)
 	}
-
-	return cmd.CombinedOutput()
+	return utils.ExecuteCommand(fullCommand)
 }
