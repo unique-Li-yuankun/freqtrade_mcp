@@ -1,28 +1,28 @@
 # FreqTrade MCP
 
-### 概述
-FreqTrade MCP 是一个集成了模型上下文协议（MCP）的加密货币回测工具。
+### Overview
+FreqTrade MCP is a cryptocurrency backtesting tool integrated with the Model Context Protocol (MCP).
 
-### 快速开始
-写一个追涨杀跌策略，用户目录lyk，帮我回测并获取交易记录。
+### Quick Start
+Write a momentum strategy for user directory `lyk`, help me backtest it and get trading records.
 
-### 工具
+### Tools
 
-| 工具名称 | 描述 | 功能说明 | 参数说明                                                                                                                                                                                                               |
-|---------|------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **create-user-dir** | 创建用户目录用于存放策略代码与回测结果 | 创建新的用户数据目录，包含策略、配置和回测结果的文件夹结构 | `userdir`: 用户数据目录的相对路径 (例如: lyk)                                                                                                                                                                                   |
-| **download-data** | 从交易所下载OHLCV历史数据 | 下载指定交易对和时间范围的历史数据，用于回测 | `exchange`: 交易所名称<br>`timeframe`: 时间帧<br>`pairs`: 交易对列表<br>`timerange`: 时间范围<br>`userdir`: 用户数据目录路径                                                                                                                |
-| **backtesting** | 使用历史数据测试策略 | 对指定策略进行历史数据回测，生成交易结果和统计信息 | `timeframe`: 时间帧 (1m,5m,30m,1h,1d)<br>`timerange`: 数据时间范围<br>`max-open-trades`: 最大开仓数量<br>`stake-amount`: 每笔投资金额<br>`pairs`: 交易对列表<br>`starting-balance`: 起始余额<br>`strategy-list`: 要回测的策略列表<br>`userdir`: 用户数据目录路径 |
-| **backtesting-analysis** | 分析回测结果 | 对回测结果进行深入分析，生成详细的统计报告 | `userdir`: 用户数据目录路径                                                                                                                                                                                                |
-| **upsert-strategy** | 上传/更新策略代码 | 上传Python策略文件到指定用户目录的strategies文件夹 | `filename`: 策略文件名<br>`strategy`: 策略代码内容<br>`userdir`: 用户数据目录路径                                                                                                                                                     |
-| **upsert-config** | 上传/更新配置文件 | 上传配置文件(config.json)到指定用户目录 | `config`: config.json文件内容<br>`userdir`: 用户数据目录路径                                                                                                                                                                   |
-| **get-backtesting-trades** | 获取回测交易数据 | 获取最新回测结果中的交易数据，以CSV格式返回 | `userdir`: 用户数据目录路径                                                                                                                                                                                                |
+| Tool Name | Description | Functionality | Parameters |
+|-----------|-------------|---------------|-----------|
+| **create-user-dir** | Create user directory for storing strategy code and backtest results | Create a new user data directory with folder structure for strategies, configurations, and backtest results | `userdir`: Relative path of user data directory (e.g., lyk) |
+| **download-data** | Download OHLCV historical data from exchange | Download historical data for specified trading pairs and time range for backtesting | `exchange`: Exchange name<br>`timeframe`: Timeframe<br>`pairs`: List of trading pairs<br>`timerange`: Time range<br>`userdir`: User data directory path |
+| **backtesting** | Test strategy using historical data | Backtest specified strategy with historical data, generate trading results and statistics | `timeframe`: Timeframe (1m,5m,30m,1h,1d)<br>`timerange`: Data time range<br>`max-open-trades`: Maximum open trades<br>`stake-amount`: Stake per trade<br>`pairs`: List of trading pairs<br>`starting-balance`: Starting balance<br>`strategy-list`: List of strategies to backtest<br>`userdir`: User data directory path |
+| **backtesting-analysis** | Analyze backtest results | Perform in-depth analysis of backtest results, generate detailed statistical reports | `userdir`: User data directory path |
+| **upsert-strategy** | Upload/update strategy code | Upload Python strategy file to strategies folder in user directory | `filename`: Strategy filename<br>`strategy`: Strategy code content<br>`userdir`: User data directory path |
+| **upsert-config** | Upload/update configuration file | Upload configuration file (config.json) to user directory | `config`: config.json file content<br>`userdir`: User data directory path |
+| **get-backtesting-trades** | Get backtest trading data | Get trading data from latest backtest results, return in CSV format | `userdir`: User data directory path |
 
-### 使用
-PS ： 预先下载可执行文件或自行编译（https://github.com/unique-Li-yuankun/freqtrade_mcp/releases)
+### Usage
+PS: Pre-download executable or compile yourself (https://github.com/unique-Li-yuankun/freqtrade_mcp/releases)
 
 - **Windows**:
-```bash 
+```bash
 git clone https://github.com/freqtrade/freqtrade.git
 Set-ExecutionPolicy -ExecutionPolicy Bypass
 cd freqtrade
@@ -31,14 +31,14 @@ cd freqtrade
 ```
 
 - **Linux/MacOS**
-```bash 
+```bash
 git clone https://github.com/freqtrade/freqtrade.git
 cd freqtrade
 ./setup.sh -i
 ./freqtrade_mcp -dir path/to/freqtrade -addr localhost:8000
 ```
 
-配置MCP服务器
+Configure MCP Server
 
 - **Cursor**
 ```json
@@ -53,9 +53,9 @@ cd freqtrade
 
 - **Claude Code**
 ```bash
-添加到当前项目：
+Add to current project:
 claude mcp add --transport http freqtrade_mcp http://127.0.0.1:8000
 
-添加到全局：
+Add globally:
 claude mcp add --scope user --transport http freqtrade_mcp http://127.0.0.1:8000
 ```
