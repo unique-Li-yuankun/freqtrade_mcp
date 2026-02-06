@@ -1,5 +1,9 @@
 # FreqTrade MCP
 
+[English](README.md) | [中文](README.zh.md)
+
+---
+
 ### Overview
 FreqTrade MCP is a cryptocurrency backtesting tool integrated with the Model Context Protocol (MCP).
 

@@ -1,5 +1,9 @@
 # FreqTrade MCP
 
+[English](README.md) | [中文](README.zh.md)
+
+---
+
 ### 概述
 FreqTrade MCP 是一个集成了模型上下文协议（MCP）的加密货币回测工具。
 
